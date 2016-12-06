@@ -72,9 +72,6 @@ void thread_spawner (unsigned long start, int max_threads) {
     std::list<std::future<void>*> threads;
     
     // loops while program close command has not been given.
-    
-
-    
     while(!close_program) {
         if (threads.size() < max_threads) {
             try {
@@ -85,7 +82,7 @@ void thread_spawner (unsigned long start, int max_threads) {
                 threads.push_back(future);
             }
             catch(std::system_error &e) {
-                std::cout << "\n\nSystem error for creating thread \n\n";
+                std::cout << "\n\nSystem error: " << e.what() << "\n\n";
                 std::cout << &e;
             }
         }
@@ -93,7 +90,7 @@ void thread_spawner (unsigned long start, int max_threads) {
             
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             
-            for (std::list<std::future<void>*>::iterator itr = threads.begin(); itr != threads.end(); itr++) {
+            for (std::list<std::future<void>*>::iterator itr = threads.begin(); itr != threads.end(); ++itr) {
                 std::future<void> *thread = *itr;
                 auto status = thread->wait_for(std::chrono::seconds(0));
                 if (status == std::future_status::ready) {
@@ -106,7 +103,7 @@ void thread_spawner (unsigned long start, int max_threads) {
         start+=2;
     }
     while (threads.size() > 0)
-        for (std::list<std::future<void>*>::iterator itr = threads.begin(); itr != threads.end(); itr++) {
+        for (std::list<std::future<void>*>::iterator itr = threads.begin(); itr != threads.end(); ++itr) {
             std::future<void> *thread = *itr;
             auto status = thread->wait_for(std::chrono::seconds(0));
             if (status == std::future_status::ready) {
@@ -121,25 +118,13 @@ void thread_spawner (unsigned long start, int max_threads) {
 
 int main(int argc, const char * argv[]) {
     
-    unsigned long i = std::atol(argv[1]);
     bool thread_spawn_running = false;
     std::future<void> future;
     
-    char *input_integer;
-    
-    if (argc < 2) {
-        std:: cout << "Enter Start Number \n";
-        std::cin  >> input_integer;
-        i = std::atol(input_integer);
-    }
-    
-    
-    
-    if (i % 2 == 0)
-        ++i;
     
     while(true) {
         std::string command  = "";
+        
         std::cout << "enter command: \n";
         std::cin >> command;
         
@@ -158,29 +143,95 @@ int main(int argc, const char * argv[]) {
             LARGEST_PRIME_LOCK.unlock();
         }
         
-        else if (command == "fa" || command == "FA") {
-            std::string max_threads;
+        else if (command == "fa" || command == "FA")
+        {
+            std::string max_threads, input_integer_str;
             int max_threads_int;
+            unsigned long input_integer;
             
             if (thread_spawn_running) {
                 std::cout << "Already calculating all primes";
                 continue;
             }
             
-            std::cout << "Enter max number of threads \n";
-            std::cin >> max_threads;
+            std:: cout << "Enter Base Number 'must be positive integer'\n";
+            std::cin  >> input_integer_str;
+            
             try {
-                max_threads_int = std::stoi(max_threads);
-            } catch (std::exception const & e) {
-                std::cout << "threads input must be an integer \nerror: " << e.what() << std::endl;
+                input_integer = std::stoi(input_integer_str);
+            }
+            catch (std::exception const & e) {
+                std::cout << "base number input must be a positive integer \nerror: " << e.what() << std::endl <<"Returning to Menu\n";
+                continue;
+                
             }
             
-            future = std::async(thread_spawner, i, max_threads_int);
+            
+            std::cout << "Enter max number of threads 'must be positive integer'\n";
+            std::cin >> max_threads;
+            
+           
+            try {
+                max_threads_int = std::stoi(max_threads);
+            }
+            catch (std::exception const &e) {
+                std::cout << "threads input must be an integer \nerror: " << e.what() << std::endl <<"Returning to Menu\n";
+                continue;
+            }
+            
+            future = std::async(thread_spawner, input_integer, max_threads_int);
             thread_spawn_running = true;
         }
         
         else if (command == "m" || command == "M") {
             std::cout << "lp - prints largest prime\nfa start calculating all prime starting from a base value\nq - quits program\n";
+        }
+        
+        else if (command == "factor" || command == "FACTOR") {
+            std::string num_to_factor_str;
+            unsigned long num_to_factor;
+            std::cout << "Enter Number To Factor:\n";
+            std::cin >> num_to_factor_str;
+            try {
+                num_to_factor = std::stoul(num_to_factor_str);
+            }
+            catch (std::exception const &e) {
+                std::cout << "Number must be valid integer\nerror: " << e.what() << std::endl <<"Returning to Menu\n";
+                continue;
+            }
+            Factor factor(num_to_factor);
+            factor.factor_int();
+            factor.print_factors();
+            if (factor.is_prime) {
+                LARGEST_PRIME_LOCK.lock();
+                    if(num_to_factor > largest_prime)
+                        largest_prime = num_to_factor;
+                LARGEST_PRIME_LOCK.unlock();
+            }
+            
+        }
+        
+        else if (command == "check" || command == "CHECK") {
+            std::string num_to_factor_str;
+            unsigned long num_to_factor;
+            std::cout << "Enter Number To Factor:\n";
+            std::cin >> num_to_factor_str;
+            try {
+                num_to_factor = std::stoul(num_to_factor_str);
+            }
+            catch (std::exception const &e) {
+                std::cout << "Number must be valid integer\nerror: " << e.what() << std::endl <<"Returning to Menu\n";
+                continue;
+            }
+            Factor factor(num_to_factor);
+            if (factor.check_is_prime()) {
+                std::cout << num_to_factor << " is a Prime \n";
+                LARGEST_PRIME_LOCK.lock();
+                if (num_to_factor > largest_prime)
+                    largest_prime = num_to_factor;
+                LARGEST_PRIME_LOCK.unlock();
+            }
+            else std::cout << num_to_factor <<" is not a Prime\n";
         }
         
         else

@@ -39,7 +39,11 @@ void Factor::factor_int() {
     if (*left_factor_value.end() == 1) is_prime = true;
 }
 
+//pre: function takes no arguments, factor_int() must be called first
+//post: prints out positive factors for NUM_TO_FACTOR
 void Factor::print_factors() {
+    if (left_factor_value.empty())
+        throw std::runtime_error("print_factors fn called befor factor_int() factors lists are empty");
     std::cout << "\npositive factors for: " << this->NUM_TO_FACTOR << std::endl;
     for (std::list<unsigned long>::iterator left_itr = left_factor_value.begin(), right_itr = right_factor_value.begin(); left_itr != left_factor_value.end(); ++left_itr, ++right_itr) {
         std::cout << *left_itr << " * " << *right_itr << std::endl;
