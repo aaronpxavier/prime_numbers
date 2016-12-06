@@ -23,9 +23,16 @@ Factor::Factor(const long INT_A) {
 //post:: finds all postive factors for number stored in NUM_TO_FACTOR
 void Factor::factor_int() {
     unsigned long i = 1;
-    if (this->NUM_TO_FACTOR == 0) {
+    
+    if (this->is_prime) {
+        left_factor_value.push_back(this->NUM_TO_FACTOR);
+        right_factor_value.push_back(1);
         return;
     }
+    
+    if (this->NUM_TO_FACTOR == 0)
+        return;
+    
     while(true) {
         if (this->NUM_TO_FACTOR % i == 0) {
             unsigned long result = this->NUM_TO_FACTOR/i;

@@ -133,7 +133,7 @@ int main(int argc, const char * argv[]) {
             break;
         }
         
-        else if (command == "lp" || command == "LP") {
+        else if (command == "L" || command == "l") {
             LARGEST_PRIME_LOCK.lock();
             if (largest_prime != 0)
                 std::cout << "the Largest prime is: " << largest_prime << std::endl;
@@ -184,7 +184,8 @@ int main(int argc, const char * argv[]) {
         }
         
         else if (command == "m" || command == "M") {
-            std::cout << "lp - prints largest prime\nfa start calculating all prime starting from a base value\nq - quits program\n";
+            std::cout << "l - prints largest prime\nfa start calculating all prime starting from a base value\nq - quits program\n" <<
+                         "factor - prints all positive factors for given integer\n check - checks if given integer is a prime";
         }
         
         else if (command == "factor" || command == "FACTOR") {
