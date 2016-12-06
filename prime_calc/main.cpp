@@ -14,17 +14,20 @@
 #include <list>
 #include <mutex> 
 
-#define NUM_THREADS     100
 
 unsigned long largest_prime;
 
 std::mutex LARGEST_PRIME_LOCK;
 
+std::mutex CLOSE_PROGRAM_LOCK;
 
 bool close_program = false;
 
+
+//pre: no arguments taken.
+//post: prints out the value of hte largest prime every 2 seconds.
 void printLargestPrime() {
-    while(true) {
+    while(!close_program) {
         LARGEST_PRIME_LOCK.lock();
         if (largest_prime != 0)
             std::cout << "the Largest prime is: " << largest_prime << std::endl;
@@ -33,11 +36,11 @@ void printLargestPrime() {
     }
 }
 
-//pre integer_to_check must be
+//pre integer_to_check must be declared and defined.
+//post. 
 void find_prime(unsigned long integer_to_check) {
     Factor factor(integer_to_check);
-    factor.factorInt();
-    if(factor.isPrime)
+    if(factor.check_is_prime())
     {
         LARGEST_PRIME_LOCK.lock();
         if (integer_to_check > largest_prime)
@@ -49,11 +52,12 @@ void find_prime(unsigned long integer_to_check) {
 
 //pre: start and finish must be declared and defined with positive integers;
 //post:functions ends when i reaches finish.
-void findPrimeInInterval(unsigned long start, unsigned long finish) {
+void findPrimeInInterval(unsigned long start, const unsigned long FINISH) {
     
     if (start % 2 == 0)
         ++ start;
-    for (unsigned long i = start; i < finish; i+=2) {
+    
+    for (unsigned long i = start; i < FINISH; i+=2) {
         if (close_program) break;
         find_prime(i);
     }
@@ -68,6 +72,9 @@ void thread_spawner (unsigned long start, int max_threads) {
     std::list<std::future<void>*> threads;
     
     // loops while program close command has not been given.
+    
+
+    
     while(!close_program) {
         if (threads.size() < max_threads) {
             try {
@@ -115,7 +122,8 @@ void thread_spawner (unsigned long start, int max_threads) {
 int main(int argc, const char * argv[]) {
     
     unsigned long i = std::atol(argv[1]);
-    int max_threads;
+    bool thread_spawn_running = false;
+    std::future<void> future;
     
     char *input_integer;
     
@@ -125,10 +133,7 @@ int main(int argc, const char * argv[]) {
         i = std::atol(input_integer);
     }
     
-    std::cout << "Enter max number of threads \n";
-    std::cin >> max_threads;
     
-    std::future<void> future = std::async(thread_spawner, i, max_threads);
     
     if (i % 2 == 0)
         ++i;
@@ -150,6 +155,29 @@ int main(int argc, const char * argv[]) {
             }
             LARGEST_PRIME_LOCK.unlock();
         }
+        else if (command == "fa" || command == "FA") {
+            std::string max_threads;
+            int max_threads_int;
+            
+            if (thread_spawn_running) {
+                std::cout << "Already calculating all primes";
+                continue;
+            }
+            
+            std::cout << "Enter max number of threads \n";
+            std::cin >> max_threads;
+            try {
+                max_threads_int = std::stoi(max_threads);
+            } catch (std::exception const & e) {
+                std::cout << "threads input must be an integer \nerror: " << e.what() << std::endl;
+            }
+            
+            future = std::async(thread_spawner, i, max_threads_int);
+            thread_spawn_running = true;
+        }
+        else if (command == "m" || command == "M") {
+            std::cout << "lp - prints largest prime\nfa start calculating all prime starting from a base value\nq - quits program\n";
+        }
         else
             std::cout << "Invalid command try again \n";
         
@@ -157,10 +185,11 @@ int main(int argc, const char * argv[]) {
     
     std::cout << "closing program please wait for threads to stop \n";
     std::cout << "...\n";
-    while (future.wait_for(std::chrono::seconds(0)) == std::future_status::timeout) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        
-    }
+    
+    if (thread_spawn_running)
+        while (future.wait_for(std::chrono::seconds(0)) == std::future_status::timeout) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
     
     
     return 0;

@@ -7,30 +7,56 @@
 //
 
 #include "prime.hpp"
-#include <pthread.h>
+#include <stdexcept>
 
-Factor::Factor(long intA) {
-    numToFactor = intA;
+//pre: INT_A must be a positive integer
+//post: Factor object created
+Factor::Factor(const long INT_A) {
+    if (INT_A < 1) {
+        throw std::invalid_argument("must pass in positive integer");
+    }
+    this->NUM_TO_FACTOR = INT_A;
 }
 
-void Factor::factorInt() {
+//pre:: method takes no arguments
+//post:: finds all postive factors for number stored in NUM_TO_FACTOR
+void Factor::factor_int() {
     unsigned long i = 1;
-    if (numToFactor == 0) {
+    if (this->NUM_TO_FACTOR == 0) {
         return;
     }
     while(true) {
-        if (numToFactor % i == 0) {
-            if (i > 1) {
-                isPrime = false;
-                return;
-            }
-            unsigned long result = numToFactor/i;
-            leftFactorValue.push_back(i);
-            rightFactorValue.push_back(result);
+        if (this->NUM_TO_FACTOR % i == 0) {
+            unsigned long result = this->NUM_TO_FACTOR/i;
+            left_factor_value.push_back(i);
+            right_factor_value.push_back(result);
             if (i == result) break;
         }
-        if (i*i > numToFactor) break;
+        if (i*i > this->NUM_TO_FACTOR) break;
         ++i; 
     }
-    if (*leftFactorValue.end() == 1) isPrime = true;
+    if (*left_factor_value.end() == 1) is_prime = true;
+}
+
+bool Factor::check_is_prime() {
+    unsigned long i = 1;
+    if (this->NUM_TO_FACTOR == 0) {
+        return false;
+    }
+    while(true) {
+        if (this->NUM_TO_FACTOR % i == 0) {
+            if (i > 1) {
+                is_prime = false;
+                return false;
+            }
+            unsigned long result = this->NUM_TO_FACTOR/i;
+            left_factor_value.push_back(i);
+            right_factor_value.push_back(result);
+            if(i == result) break;
+        }
+        if (i*i > this->NUM_TO_FACTOR) break;
+        ++i;
+    }
+    if (*left_factor_value.end() == 1) is_prime = true;
+    return true;
 }
