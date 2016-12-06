@@ -8,6 +8,7 @@
 
 #include "prime.hpp"
 #include <stdexcept>
+#include <iostream>
 
 //pre: INT_A must be a positive integer
 //post: Factor object created
@@ -36,6 +37,13 @@ void Factor::factor_int() {
         ++i; 
     }
     if (*left_factor_value.end() == 1) is_prime = true;
+}
+
+void Factor::print_factors() {
+    std::cout << "\npositive factors for: " << this->NUM_TO_FACTOR << std::endl;
+    for (std::list<unsigned long>::iterator left_itr = left_factor_value.begin(), right_itr = right_factor_value.begin(); left_itr != left_factor_value.end(); ++left_itr, ++right_itr) {
+        std::cout << *left_itr << " * " << *right_itr << std::endl;
+    }
 }
 
 bool Factor::check_is_prime() {

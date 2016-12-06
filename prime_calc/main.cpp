@@ -142,10 +142,12 @@ int main(int argc, const char * argv[]) {
         std::string command  = "";
         std::cout << "enter command: \n";
         std::cin >> command;
+        
         if (command == "q" || command == "Q") {
             close_program = true;
             break;
         }
+        
         else if (command == "lp" || command == "LP") {
             LARGEST_PRIME_LOCK.lock();
             if (largest_prime != 0)
@@ -155,6 +157,7 @@ int main(int argc, const char * argv[]) {
             }
             LARGEST_PRIME_LOCK.unlock();
         }
+        
         else if (command == "fa" || command == "FA") {
             std::string max_threads;
             int max_threads_int;
@@ -175,11 +178,13 @@ int main(int argc, const char * argv[]) {
             future = std::async(thread_spawner, i, max_threads_int);
             thread_spawn_running = true;
         }
+        
         else if (command == "m" || command == "M") {
             std::cout << "lp - prints largest prime\nfa start calculating all prime starting from a base value\nq - quits program\n";
         }
+        
         else
-            std::cout << "Invalid command try again \n";
+            std::cout << "Invalid command 'm' for menu \n";
         
     }
     

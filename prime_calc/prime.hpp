@@ -18,6 +18,7 @@ class Factor {
 public:
     Factor(long intA);
     void factor_int();
+    void print_factors(); 
     bool check_is_prime();
     bool is_prime = false;
     
