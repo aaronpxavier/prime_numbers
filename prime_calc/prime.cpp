@@ -43,20 +43,15 @@ bool Factor::check_is_prime() {
     if (this->NUM_TO_FACTOR == 0) {
         return false;
     }
-    while(true) {
+    while(i*i < this->NUM_TO_FACTOR) {
         if (this->NUM_TO_FACTOR % i == 0) {
             if (i > 1) {
                 is_prime = false;
                 return false;
             }
-            unsigned long result = this->NUM_TO_FACTOR/i;
-            left_factor_value.push_back(i);
-            right_factor_value.push_back(result);
-            if(i == result) break;
         }
-        if (i*i > this->NUM_TO_FACTOR) break;
         ++i;
     }
-    if (*left_factor_value.end() == 1) is_prime = true;
+    this->is_prime = true;
     return true;
 }
