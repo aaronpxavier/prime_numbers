@@ -12,9 +12,10 @@
 #include <chrono>
 #include <future>
 #include <list>
-#include <mutex> 
+#include <mutex>
 
 
+const unsigned int MAX_THREADS = std::thread::hardware_concurrency();
 unsigned long largest_prime;
 
 std::mutex LARGEST_PRIME_LOCK;
@@ -65,7 +66,7 @@ void findPrimeInInterval(unsigned long start, const unsigned long FINISH) {
 
 //pre i and max_threads must be declared and defined with positive integers.
 //post: fn stops when close program is true and all open prime calculation threads are closed.
-void thread_spawner (unsigned long start, int max_threads) {
+void thread_spawner (unsigned long start) {
     
     unsigned long threads_interval_begin = start;
     std::future<void> *future;
@@ -73,7 +74,7 @@ void thread_spawner (unsigned long start, int max_threads) {
     
     // loops while program close command has not been given.
     while(!close_program) {
-        if (threads.size() < max_threads) {
+        if (threads.size() < MAX_THREADS) {
             try {
                 future = new std::future<void>;
                 // CREATES THREADS BREAKING PROBLEM INTO SECTIONS OF 3,000,000 EACH
@@ -121,6 +122,10 @@ int main(int argc, const char * argv[]) {
     bool thread_spawn_running = false;
     std::future<void> future;
     
+    if (MAX_THREADS == 0) {
+        std::cout<<"System Max Threads 0. \n Program Exiting\n";
+        return 0;
+    }
     
     while(true) {
         std::string command  = "";
@@ -146,7 +151,6 @@ int main(int argc, const char * argv[]) {
         else if (command == "fa" || command == "FA")
         {
             std::string max_threads, input_integer_str;
-            int max_threads_int;
             unsigned long input_integer;
             
             if (thread_spawn_running) {
@@ -171,15 +175,9 @@ int main(int argc, const char * argv[]) {
             std::cin >> max_threads;
             
            
-            try {
-                max_threads_int = std::stoi(max_threads);
-            }
-            catch (std::exception const &e) {
-                std::cout << "threads input must be an integer \nerror: " << e.what() << std::endl <<"Returning to Menu\n";
-                continue;
-            }
             
-            future = std::async(thread_spawner, input_integer, max_threads_int);
+            
+            future = std::async(thread_spawner, input_integer);
             thread_spawn_running = true;
         }
         
