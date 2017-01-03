@@ -10,17 +10,17 @@ chmod +x pime_calc
 
 # usage 
 
-to start calculating all prime numbers that are greater than 100 
+to start calculating all prime numbers that are greater than 100 \n
 ./prime_calc -b 100 
 
-to start calculating all prime numbers greater than 33 but limits number of prime calculation threads to 4. Otherwise program utilizes all available cores. 
+to start calculating all prime numbers greater than 33 but limits number of prime calculation threads to 4. Otherwise program utilizes all available cores. \n
 ./prime_calc -lc 4 -b 100 
 
-to get all postive factors for a given positive integer. Example factors 88 
+to get all postive factors for a given positive integer. Example factors 88\n 
 ./prime_calc -f 88 
 
-to check if given positive integer is a prime 
-./prime_calc -c 3 
+to check if given positive integer is a prime \n
+./prime_calc -c 3
 
 #license 
 
