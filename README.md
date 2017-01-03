@@ -5,7 +5,7 @@ The Purpose of this project is to experiment with multithreading in C++;
 
 #instructions on compiling
 
-g++ main.cpp  prime.cpp -o prime_calc -pthread -std=c++11 
+g++ main.cpp  prime.cpp -o prime_calc -pthread -std=c++11 \n
 chmod +x pime_calc
 
 # usage 
