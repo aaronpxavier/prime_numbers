@@ -17,7 +17,7 @@
 
 const unsigned int MAX_THREADS = std::thread::hardware_concurrency();
 unsigned long long largest_prime;
-std::mutex LARGEST_PRIME_LOCK, CLOSE_PROGRAM_LOCK;
+std::mutex LARGEST_PRIME_LOCK;
 
 bool close_program = false;
 
@@ -72,10 +72,11 @@ void thread_spawner (unsigned long long start, unsigned int max_threads) {
     // loops while program close command has not been given.
     while(!close_program) {
         if (threads.size() < max_threads) {
+            
             try {
                 future = new std::future<void>;
                 // CREATES THREADS BREAKING PROBLEM INTO SECTIONS OF 3,000,000 EACH
-                *future = std::async(findPrimeInInterval, threads_interval_begin, threads_interval_begin + 3000000L);
+                *future = std::async(findPrimeInInterval, threads_interval_begin, threads_interval_begin + 3000000ULL);
                 threads_interval_begin += 3000000ULL;
                 threads.push_back(future);
             }
@@ -83,6 +84,7 @@ void thread_spawner (unsigned long long start, unsigned int max_threads) {
                 std::cout << "\n\nSystem error: " << e.what() << "\n\n";
                 std::cout << &e;
             }
+            
         }
         else {
             
@@ -148,7 +150,7 @@ void check_if_prime(const unsigned long long &num_to_factor) {
 
 //pre: base_value and max_threads must be delcared and defined with positive integers.
 //post:
-void run_continuous_thread_calculations(const unsigned long long &base_value, const unsigned int &max_threads) {
+void run_continuous_calculations(const unsigned long long &base_value, const unsigned int &max_threads) {
     bool thread_spawn_running = false;
     std::string command  = "";
     std::future<void> future;
@@ -214,7 +216,7 @@ int main(int argc, char ** argv) {
         return 0;
     }
     
-    while ((c = getopt(argc, argv, "lc:b:f:ap:c:")) != -1) {
+    while ((c = getopt(argc, argv, "lc:b:f:c:")) != -1) {
         switch (c) {
             case 'f' :
                 unsigned long long number_to_factor;
@@ -296,7 +298,7 @@ int main(int argc, char ** argv) {
         }
         if (!(l_flag && c_flag))
             max_threads = MAX_THREADS;
-        run_continuous_thread_calculations(base_value, max_threads);
+        run_continuous_calculations(base_value, max_threads);
     }
     
     
