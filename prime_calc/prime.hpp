@@ -16,17 +16,17 @@
 class Factor {
 
 public:
-    Factor(long intA);
+    Factor(const unsigned long long &intA);
     void factor_int();
     void print_factors(); 
     bool check_is_prime();
     bool is_prime = false;
     
 private:
-    std::list<unsigned long> left_factor_value;
-    std::list<unsigned long> right_factor_value;
+    std::list<unsigned long long> left_factor_value;
+    std::list<unsigned long long> right_factor_value;
     
-    unsigned long NUM_TO_FACTOR;
+    unsigned long long NUM_TO_FACTOR;
 };
 
 #endif /* prime_hpp */

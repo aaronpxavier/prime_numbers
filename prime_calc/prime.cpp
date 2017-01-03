@@ -12,17 +12,14 @@
 
 //pre: INT_A must be a positive integer
 //post: Factor object created
-Factor::Factor(const long INT_A) {
-    if (INT_A < 1) {
-        throw std::invalid_argument("must pass in positive integer");
-    }
+Factor::Factor(const unsigned long long &INT_A) {
     this->NUM_TO_FACTOR = INT_A;
 }
 
 //pre:: method takes no arguments
 //post:: finds all postive factors for number stored in NUM_TO_FACTOR
 void Factor::factor_int() {
-    unsigned long i = 1;
+    unsigned long long i = 1;
     
     if (this->is_prime) {
         left_factor_value.push_back(this->NUM_TO_FACTOR);
@@ -35,13 +32,13 @@ void Factor::factor_int() {
     
     while(true) {
         if (this->NUM_TO_FACTOR % i == 0) {
-            unsigned long result = this->NUM_TO_FACTOR/i;
+            unsigned long long result = this->NUM_TO_FACTOR/i;
             left_factor_value.push_back(i);
             right_factor_value.push_back(result);
             if (i == result) break;
         }
         if (i*i > this->NUM_TO_FACTOR) break;
-        ++i; 
+        ++i;
     }
     if (*left_factor_value.end() == 1) is_prime = true;
 }
@@ -52,13 +49,13 @@ void Factor::print_factors() {
     if (left_factor_value.empty())
         throw std::runtime_error("print_factors fn called befor factor_int() factors lists are empty");
     std::cout << "\npositive factors for: " << this->NUM_TO_FACTOR << std::endl;
-    for (std::list<unsigned long>::iterator left_itr = left_factor_value.begin(), right_itr = right_factor_value.begin(); left_itr != left_factor_value.end(); ++left_itr, ++right_itr) {
+    for (std::list<unsigned long long>::iterator left_itr = left_factor_value.begin(), right_itr = right_factor_value.begin(); left_itr != left_factor_value.end(); ++left_itr, ++right_itr) {
         std::cout << *left_itr << " * " << *right_itr << std::endl;
     }
 }
 
 bool Factor::check_is_prime() {
-    unsigned long i = 1;
+    unsigned long long i = 1;
     if (this->NUM_TO_FACTOR == 0) {
         return false;
     }
